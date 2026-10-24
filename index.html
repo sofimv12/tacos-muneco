@@ -30,7 +30,6 @@
   button{cursor:pointer}
   :focus-visible{outline:3px solid var(--maiz);outline-offset:2px}
 
-  /* Login */
   #login{max-width:360px;margin:12vh auto 0;padding:0 20px}
   #login h1{font-size:2.2rem;font-weight:800;margin:0 0 4px;color:var(--chile)}
   #login p{margin:0 0 20px}
@@ -47,8 +46,7 @@
   .btn.sec{background:transparent;color:var(--tinta);border:2px solid var(--linea)}
   .btn.sec:hover{border-color:var(--tinta)}
   .btn:disabled{opacity:.5;cursor:not-allowed}
-
-  /* App */
+  
   #app{display:none}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;
     padding:12px 20px;background:var(--chile);color:#fff}
@@ -71,7 +69,6 @@
   .prod .cant{position:absolute;top:-8px;right:-8px;background:var(--maiz);color:var(--tinta);
     font-weight:800;border-radius:999px;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;padding:0 6px}
 
-  /* Ticket */
   aside{background:#fff;border:2px solid var(--linea);border-radius:12px;padding:16px;align-self:start;position:sticky;top:12px}
   aside h2{margin-top:0}
   #lineas{min-height:60px;margin-bottom:8px}
@@ -108,7 +105,6 @@
   #msg.mal{color:var(--chile-osc)}
   .acciones{display:grid;gap:8px;margin-top:8px}
 
-  /* Pestañas y ventas del día */
   .tabs{display:flex;gap:6px}
   .tab{border:0;background:rgba(255,255,255,.15);color:#fff;font-weight:700;padding:8px 14px;border-radius:8px}
   .tab:hover{background:rgba(255,255,255,.28)}
@@ -158,7 +154,6 @@
 </head>
 <body>
 
-<!-- Inicio de sesión -->
 <section id="login">
   <h1>Tacos el Muñeco</h1>
   <p>Inicia sesión para registrar ventas.</p>
@@ -170,7 +165,6 @@
   <div class="error" id="errorLogin" role="alert"></div>
 </section>
 
-<!-- Aplicación -->
 <div id="app">
   <header>
     <h1>Tacos el Muñeco</h1>
@@ -255,17 +249,14 @@ const redondear = n => Math.round(n * 100) / 100;
 const dinero = n => redondear(n).toFixed(2);
 
 let catalogo = [];
-let carrito = {};        
+let carrito = {};          // id -> { producto, cantidad }
 let guardando = false;
 
-/* Reloj */
 function reloj(){ $("hora").textContent = new Date().toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "medium" }); }
 setInterval(reloj, 1000); reloj();
 
-/* Mensajes */
 function mensaje(texto, tipo){ const m = $("msg"); m.textContent = texto; m.className = tipo || ""; }
 
-/* Productos */
 async function cargarProductos(){
   const { data, error } = await db.from("productos").select("*").eq("activo", true).order("id");
   if (error) { mensaje("No se pudieron cargar los productos: " + error.message, "mal"); return; }
@@ -297,7 +288,6 @@ function pintarProductos(){
   });
 }
 
-/* Carrito */
 function agregar(p){
   carrito[p.id] = carrito[p.id] || { producto: p, cantidad: 0 };
   carrito[p.id].cantidad++;
@@ -339,7 +329,6 @@ function pintarTicket(){
   $("total").textContent = dinero(total());
 }
 
-/* Pago */
 function metodo(){ return document.querySelector("input[name=pago]:checked").value; }
 
 function actualizarPago(){
@@ -387,7 +376,6 @@ function limpiarVenta(){
 }
 $("cancelar").onclick = () => { limpiarVenta(); mensaje(""); };
 
-/* Cobrar */
 $("cobrar").onclick = async () => {
   if (guardando) return;
   const t = total();
@@ -426,7 +414,6 @@ $("cobrar").onclick = async () => {
   function fin(t, tipo){ guardando = false; $("cobrar").disabled = false; mensaje(t, tipo); }
 };
 
-/* ====== Ventas por día ====== */
 const dosD = n => String(n).padStart(2, "0");
 const fechaLocal = d => d.getFullYear() + "-" + dosD(d.getMonth() + 1) + "-" + dosD(d.getDate());
 const horaCorta = iso => new Date(iso).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -588,7 +575,6 @@ function marcarDia(){
   document.querySelectorAll(".dia").forEach(b => b.classList.toggle("sel", b.dataset.f === $("fechaVentas").value));
 }
 
-/* Sesión */
 function mostrarApp(sesion){
   if (sesion) {
     $("login").style.display = "none";
